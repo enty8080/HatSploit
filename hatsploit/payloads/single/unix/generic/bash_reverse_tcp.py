@@ -8,7 +8,7 @@ import random
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "BASH Shell Reverse TCP",
@@ -19,7 +19,6 @@ class HatSploitPayload(Payload, Handler):
             'Description': "BASH shell reverse TCP payload.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_UNIX,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

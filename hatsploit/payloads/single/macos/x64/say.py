@@ -20,7 +20,6 @@ class HatSploitPayload(Payload, MacOS):
             'Description': "Say payload for macOS x64.",
             'Arch': ARCH_X64,
             'Platform': OS_MACOS,
-            'Type': ONE_SIDE,
         })
 
         self.message = Option('MSG', "Hello, HatSploit!", "Message to say.", True)

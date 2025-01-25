@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, BindTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "ZSH shell Bind TCP",
@@ -17,7 +17,6 @@ class HatSploitPayload(Payload, Handler):
             'Description': "ZSH shell bind TCP payload.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_UNIX,
-            'Type': BIND_TCP,
         })
 
     def run(self):

@@ -7,7 +7,7 @@ from hatsploit.lib.core.payload.basic import *
 from hatsploit.lib.core.payload.macos import MacOS
 
 
-class HatSploitPayload(Payload, Handler, MacOS):
+class HatSploitPayload(Payload, BindTCPHandler, MacOS):
     def __init__(self):
         super().__init__({
             'Name': "macOS x64 Shell Bind TCP",
@@ -21,7 +21,6 @@ class HatSploitPayload(Payload, Handler, MacOS):
             """,
             'Arch': ARCH_X64,
             'Platform': OS_MACOS,
-            'Type': BIND_TCP,
         })
 
     def implant(self):

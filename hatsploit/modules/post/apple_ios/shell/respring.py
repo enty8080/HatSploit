@@ -24,4 +24,4 @@ class HatSploitModule(Module):
                                      platforms=[OS_IPHONE], type='shell')
 
     def run(self):
-        self.session.session.send_command("killall SpringBoard")
+        self.session.session.execute("killall SpringBoard")

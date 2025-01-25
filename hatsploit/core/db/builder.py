@@ -161,8 +161,7 @@ class Builder(Config, Badges):
                     Name TEXT,
                     Description TEXT,
                     Arch TEXT,
-                    Platform TEXT,
-                    Type TEXT
+                    Platform TEXT
                 )''')
 
         data = []
@@ -183,8 +182,7 @@ class Builder(Config, Badges):
                         payload_object.info['Name'],
                         payload_object.info['Description'],
                         str(payload_object.info['Arch']),
-                        str(payload_object.info['Platform']),
-                        payload_object.info['Type'],
+                        str(payload_object.info['Platform'])
                     ))
 
                 except Exception:
@@ -193,7 +191,7 @@ class Builder(Config, Badges):
                     )
 
         cur.executemany('''INSERT OR REPLACE INTO payloads
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', data)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)''', data)
         con.commit()
 
     def build_module_database(self, input_path: str, output_path: str) -> None:

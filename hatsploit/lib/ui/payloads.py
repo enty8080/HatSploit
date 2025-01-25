@@ -253,12 +253,8 @@ class Payloads(HatAsm):
         mixins = module.payload.criteria
 
         for mixin in mixins:
-            types = mixins[mixin].get('Type', None)
             platforms = mixins[mixin].get('Platform', None)
             arches = mixins[mixin].get('Arch', None)
-
-            if types and payload['Type'] not in types:
-                continue
 
             if platforms and not any(payload['Platform'] == platform for platform in platforms):
                 continue

@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "Windows x64 Shell Reverse TCP",
@@ -17,7 +17,6 @@ class HatSploitPayload(Payload, Handler):
             'Description': "Reverse shell TCP payload for Windows x64.",
             'Arch': ARCH_X64,
             'Platform': OS_WINDOWS,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

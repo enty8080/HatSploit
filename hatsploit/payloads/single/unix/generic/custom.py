@@ -17,7 +17,6 @@ class HatSploitPayload(Payload):
             'Description': "Send custom command.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_UNIX,
-            'Type': ONE_SIDE,
         })
 
         self.command = Option('CMD', None, 'Command to send', True)

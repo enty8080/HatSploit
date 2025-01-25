@@ -25,11 +25,14 @@ SOFTWARE.
 import time
 import socket
 
+from badges import Badges
 from typing import (
     Optional,
     Tuple,
     Union
 )
+
+from pex.proto.http import HTTPListener
 
 from hatsploit.lib.complex import *
 from hatsploit.lib.core.session import Session
@@ -37,17 +40,8 @@ from hatsploit.lib.core.session import Session
 from hatsploit.lib.ui.payloads import Payloads
 from hatsploit.lib.ui.jobs import Jobs, Job
 
-from hatsploit.lib.handle import Handle
-from hatsploit.lib.core.handler.misc import HatSploitSession
 
-from hatsploit.lib.core.payload.const import (
-    REVERSE_TCP,
-    BIND_TCP,
-    ONE_SIDE
-)
-
-
-class Send(Handle, Jobs):
+class Send(Badges, Jobs):
     """ Subclass of hatsploit.lib.handler module.
 
     This subclass of hatsploit.lib.handler module is intended for
@@ -56,20 +50,15 @@ class Send(Handle, Jobs):
 
     payloads = Payloads()
 
-    def handle_session(self, host: str, port: int,
-                       payload: PayloadOption,
+    def handle_session(self, payload: PayloadOption,
                        staged: bool = False,
-                       timeout: Optional[int] = None,
-                       job: Optional[Job] = None) -> Tuple[Union[Session, socket.socket], str]:
+                       job: Optional[Job] = None) -> Tuple[Session, list]:
         """ Handle session.
 
-        :param str host: host
-        :param int port: port
         :param PayloadOption payload: payload choice
-        :param Optional[int] timeout: timeout
         :param bool staged: send stages or continue
         :param Optional[Job] job: job if exists
-        :return Tuple[Union[Session, socket.socket], str]: session and host
+        :return Tuple[Session, list]: session and address
         :raises RuntimeWarning: with trailing warning message
         :raises RuntimeError: with trailing error message
         """
@@ -77,53 +66,14 @@ class Send(Handle, Jobs):
         if not payload.payload:
             raise RuntimeError("No payload configured for handler!")
 
-        type = payload.info['Type']
-
-        if type == ONE_SIDE:
-            if not payload.payload.staged.value and not staged:
-                return
-
-            if not host or not port:
-                raise RuntimeError("Reverse TCP requires host and port set!")
-
-            client, host = self.listen_session(host, port, timeout=timeout, job=job)
-
-            if not client and not host:
-                raise RuntimeError("Reverse TCP received corrupted session!")
-
+        if payload.payload.staged.value or staged:
+            client, address = payload.stager.handle_all(job=job)
             self.send_all(payload, client)
-            return
-
-        elif type == REVERSE_TCP:
-            if not host or not port:
-                raise RuntimeError("Reverse TCP requires host and port set!")
-
-            client, host = self.listen_session(host, port, timeout=timeout, job=job)
-
-            if not client and not host:
-                raise RuntimeError("Reverse TCP received corrupted session!")
-
-            if payload.payload.staged.value or staged:
-                self.send_all(payload, client)
-
-            return client, host
-
-        elif type == BIND_TCP:
-            if not host or not port:
-                raise RuntimeError("Bind TCP requires host and port set!")
-
-            client = self.connect_session(host, port, timeout=timeout)
-
-            if not client:
-                raise RuntimeError("Bind TCP received corrupted session!")
-
-            if payload.payload.staged.value or staged:
-                self.send_all(payload, client)
-
-            return client, host
 
         else:
-            raise RuntimeError(f"Invalid payload type: {type}!")
+            client, address = payload.payload.handle_all(job=job)
+
+        return payload.payload.handle_implant(client), address
 
     def send_all(self, payload: PayloadOption, client: socket.socket) -> None:
         """ Send implant available in the payload with available stages.
@@ -194,18 +144,19 @@ class Send(Handle, Jobs):
                 request.send_status(200)
                 request.wfile.write(payload)
 
+        server = HTTPListener(
+            host=dropper.srvhost.value,
+            port=dropper.srvport.value,
+            methods={
+                'get': get_submethod
+            }
+        )
+        server.listen()
+
         job_id = self.create_job(
             'Dropper HTTP server',
             'Handler',
-            self.listen_server,
-            (
-                dropper.srvhost.value,
-                dropper.srvport.value,
-                {
-                    'get': get_submethod
-                },
-                1
-            ),
+            server.accept,
             bind_to_module=True,
             pass_job=True
         )
@@ -214,14 +165,11 @@ class Send(Handle, Jobs):
         return job_id
 
     def drop_payload(self, payload: PayloadOption, dropper: DropperOption,
-                     host: str, port: int,
                      **kwargs) -> Tuple[Union[socket.socket, str], str]:
         """ Send payload.
 
         :param PayloadOption payload: payload
         :param DropperOption dropper: dropper to use
-        :param str host: host to start listener on
-        :param int port: port to start listener on
         :return Tuple[Union[socket.socket, str], str]: final socket and host
         """
 
@@ -232,9 +180,6 @@ class Send(Handle, Jobs):
 
         if not sender:
             raise RuntimeError("Payload sender is not specified!")
-
-        if not host and not port:
-            raise RuntimeError("Host and port were not found for payload!")
 
         space = payload.config.get('Space', 2048)
         arguments = payload.info.get('Arguments', '')
@@ -264,8 +209,6 @@ class Send(Handle, Jobs):
                 'Handler',
                 self.handle_session,
                 (
-                    host,
-                    port,
                     payload,
                 ),
                 {
@@ -321,8 +264,6 @@ class Send(Handle, Jobs):
             'Handler',
             self.handle_session,
             (
-                host,
-                port,
                 payload,
             ),
             timeout=1,
@@ -364,13 +305,11 @@ class Send(Handle, Jobs):
 
         return self.get_job(job_id).join()
 
-    def inline_payload(self, payload: PayloadOption, host: str, port: int,
+    def inline_payload(self, payload: PayloadOption,
                        **kwargs) -> Tuple[Union[socket.socket, str], str]:
         """ Send payload if inline.
 
         :param PayloadOption payload: payload option
-        :param str host: host to start listener on
-        :param int port: port to start listener on
         :return Tuple[Union[socket.socket, str], str]: final socket and host
         """
 
@@ -381,9 +320,6 @@ class Send(Handle, Jobs):
 
         if not sender:
             raise RuntimeError("Payload sender is not specified!")
-
-        if not host and not port:
-            raise RuntimeError("Host and port were not found for payload!")
 
         space = payload.config.get('Space', 2048)
 
@@ -401,8 +337,6 @@ class Send(Handle, Jobs):
                 'Handler',
                 self.handle_session,
                 (
-                    host,
-                    port,
                     payload,
                 ),
                 {
@@ -424,8 +358,6 @@ class Send(Handle, Jobs):
             'Handler',
             self.handle_session,
             (
-                host,
-                port,
                 payload,
             ),
             timeout=1,

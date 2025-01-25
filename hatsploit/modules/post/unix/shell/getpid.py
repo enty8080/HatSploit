@@ -25,7 +25,7 @@ class HatSploitModule(Module):
                                      type='shell')
 
     def run(self):
-        pid = self.session.session.send_command("printf $$", True).strip()
+        pid = self.session.session.execute("printf $$", True).strip()
 
         if pid:
             self.print_information(f"PID: {pid}")

@@ -28,10 +28,10 @@ from hatsploit.lib.base import BaseMixin
 
 
 class Session(BaseMixin):
-    """ Subclass of hatsploit.lib module.
+    """ Subclass of hatsploit.lib.core.session module.
 
-    This subclass of hatsploit.lib module is intended for providing
-    wrapper for a session.
+    This subclass of hatsploit.lib.core.session module is intended for
+    providing wrapper for a session.
     """
 
     def __init__(self, info: dict = {}) -> None:
@@ -79,7 +79,7 @@ class Session(BaseMixin):
 
         return False
 
-    def send_command(self, command: str, output: bool = False) -> Union[None, str]:
+    def execute(self, command: str, output: bool = False) -> Union[None, str]:
         """ Send command to this session.
 
         :param str command: command to send
@@ -87,7 +87,7 @@ class Session(BaseMixin):
         :return Union[None, str]: None if output is False else output
         """
 
-        return None
+        return
 
     def download(self, remote_file: str, local_path: str) -> bool:
         """ Download file from this session.

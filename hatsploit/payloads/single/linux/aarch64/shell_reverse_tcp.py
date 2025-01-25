@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "Linux aarch64 Shell Reverse TCP",
@@ -20,7 +20,6 @@ class HatSploitPayload(Payload, Handler):
             """,
             'Arch': ARCH_AARCH64,
             'Platform': OS_LINUX,
-            'Type': REVERSE_TCP,
         })
 
         self.shell = Option('SHELL', '/bin/sh', "Executable path.", True,

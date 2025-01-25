@@ -21,7 +21,6 @@ class HatSploitPayload(Payload, Linux):
             """,
             'Arch': ARCH_ARMBE,
             'Platform': OS_LINUX,
-            'Type': ONE_SIDE,
         })
 
     def run(self):

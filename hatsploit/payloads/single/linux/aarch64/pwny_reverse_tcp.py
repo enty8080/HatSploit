@@ -14,7 +14,7 @@ from elftools.elf.elffile import ELFFile
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "Linux aarch64 Pwny Reverse TCP",
@@ -28,8 +28,7 @@ class HatSploitPayload(Payload, Handler):
             """,
             'Arch': ARCH_AARCH64,
             'Platform': OS_LINUX,
-            'Session': PwnySession,
-            'Type': REVERSE_TCP,
+            'Session': PwnySession
         })
 
     def stage(self):

@@ -7,7 +7,7 @@ from hatsploit.lib.core.payload.basic import *
 from hatsploit.lib.core.payload.linux import Linux
 
 
-class HatSploitPayload(Payload, Handler, Linux):
+class HatSploitPayload(Payload, BindTCPHandler, Linux):
     def __init__(self):
         super().__init__({
             'Name': "Linux x64 Shell Bind TCP",
@@ -21,7 +21,6 @@ class HatSploitPayload(Payload, Handler, Linux):
             """,
             'Arch': ARCH_X64,
             'Platform': OS_LINUX,
-            'Type': BIND_TCP,
         })
 
     def implant(self):

@@ -81,7 +81,7 @@ class Exit(object):
 
         elif type == 'sleep':
             block += dedent(f"""\
-                push 300000
+                push 0x000493E0
                 pop  rcx
                 mov  r10, {self.text.block_api_hash('kernel32.dll', 'Sleep')}
                 call rbp

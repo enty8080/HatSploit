@@ -4,9 +4,10 @@ Current source: https://github.com/EntySec/HatSploit
 """
 
 from hatsploit.lib.core.payload.basic import *
+from hatsploit.lib.core.payload.linux import Linux
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler, Linux):
     def __init__(self):
         super().__init__({
             'Name': "Linux x64 Reverse TCP",
@@ -20,7 +21,6 @@ class HatSploitPayload(Payload, Handler):
             """,
             'Arch': ARCH_X64,
             'Platform': OS_LINUX,
-            'Type': REVERSE_TCP,
         })
 
         self.reliable = BooleanOption('StageReliable', 'no', "Add error checks to payload.",

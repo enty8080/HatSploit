@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 from hatsploit.lib.core.module import Module
-from hatsploit.lib.core.handler import Handler, HatSploitSession
+from hatsploit.lib.core.handler import Handler
 
 from pex.platform import *
 from pex.arch import *

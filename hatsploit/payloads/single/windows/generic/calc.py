@@ -17,7 +17,6 @@ class HatSploitPayload(Payload):
             'Description': "Windows calc.exe payload.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_WINDOWS,
-            'Type': ONE_SIDE,
         })
 
     def run(self):

@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload):
     def __init__(self):
         super().__init__({
             'Name': "Windows PowerShell Reverse TCP",
@@ -17,7 +17,6 @@ class HatSploitPayload(Payload, Handler):
             'Description': "Windows cmd.exe reverse TCP payload through PowerShell script.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_WINDOWS,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

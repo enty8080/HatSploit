@@ -23,7 +23,9 @@ SOFTWARE.
 """
 
 from hatsploit.lib.core.payload import Payload
-from hatsploit.lib.core.handler import Handler
+
+from hatsploit.lib.core.handler.reverse_tcp import ReverseTCPHandler
+from hatsploit.lib.core.handler.bind_tcp import BindTCPHandler
 
 from pex.arch import *
 from pex.platform import *

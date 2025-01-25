@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, BindTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "Linux aarch64 Bind TCP",
@@ -19,8 +19,7 @@ class HatSploitPayload(Payload, Handler):
                 with AARCH64 architecture and reads next stage.
             """,
             'Arch': ARCH_AARCH64,
-            'Platform': OS_LINUX,
-            'Type': BIND_TCP,
+            'Platform': OS_LINUX
         })
 
         self.reliable = BooleanOption('StageReliable', 'no', "Add error checks to payload.",

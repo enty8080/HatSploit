@@ -7,7 +7,7 @@ from hatsploit.lib.core.payload.basic import *
 from pex.string import String
 
 
-class HatSploitPayload(Payload, Handler, String):
+class HatSploitPayload(Payload, ReverseTCPHandler, String):
     def __init__(self):
         super().__init__({
             'Name': "Netcat Shell Reverse TCP",
@@ -18,7 +18,6 @@ class HatSploitPayload(Payload, Handler, String):
             'Description': "Netcat shell reverse TCP payload.",
             'Arch': ARCH_GENERIC,
             'Platform': OS_UNIX,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

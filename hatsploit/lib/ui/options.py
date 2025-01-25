@@ -154,6 +154,16 @@ class Options(object):
     tools for working with module, payload or encoder options.
     """
 
+    def sync_options(self, sync: dict) -> None:
+        """ Sync with options from list.
+
+        :param dict sync: options to sync
+        :return None: None
+        """
+
+        for option, attr in sync.items():
+            self.set(option, attr.value)
+
     def get_option(self, option: str) -> Union[Option, None]:
         """ Get option object by name.
 

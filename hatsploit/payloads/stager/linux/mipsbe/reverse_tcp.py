@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "Linux mipsbe Reverse TCP",
@@ -20,7 +20,6 @@ class HatSploitPayload(Payload, Handler):
             """,
             'Arch': ARCH_MIPSBE,
             'Platform': OS_LINUX,
-            'Type': REVERSE_TCP,
         })
 
         self.reliable = BooleanOption('StageReliable', 'no', "Add error checks to payload.",

@@ -35,11 +35,6 @@ from hatsploit.lib.ui.option import (
     PortOption
 )
 
-from hatsploit.lib.core.payload.const import (
-    ONE_SIDE,
-    REVERSE_TCP
-)
-
 from hatsploit.lib.ui.modules import Modules
 from hatsploit.lib.ui.payloads import Payloads
 from hatsploit.lib.ui.encoders import Encoders
@@ -171,8 +166,7 @@ class PayloadOption(Option):
             return b''
 
         if stager:
-            for option in self.payload.options:
-                payload.set(option, self.payload.options[option].value)
+            payload.sync_options(self.payload.options)
 
         buffer = self.payloads.run_payload(
             payload, self.encoders.get_current_encoder(
@@ -217,17 +211,30 @@ class PayloadOption(Option):
 
         stage = self.payload.info['Stage']
 
-        if not stage:
+        if not stage and self.payload.type:
             stage = '/'.join((str(self.info['Platform']),
                               str(self.info['Arch']),
-                              self.info['Type'] if self.info['Type'] != ONE_SIDE
-                              else REVERSE_TCP))
+                              str(self.payload.type)))
 
         if not self.payloads.check_exist(stage):
             return
 
         self.payloads.add_payload(module, stage)
         self.stager = self.payloads.get_module_payload(stage, module)
+
+        for option, attr in self.stager.options.items():
+            if self.payload.get_option(option):
+                continue
+
+            setattr(self.payload, option.lower(), attr)
+
+        for option, attr in self.stager.advanced.items():
+            if self.payload.get_option(option):
+                continue
+
+            setattr(self.payload, option.lower(), attr)
+
+        self.payload.update()
 
 
 class EncoderOption(Option):

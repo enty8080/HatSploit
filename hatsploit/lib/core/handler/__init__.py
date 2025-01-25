@@ -37,19 +37,13 @@ from typing import (
 
 from pex.proto.tcp import TCPTools
 
-from hatsploit.lib.ui.option import (
-    IPv4Option,
-    PortOption,
-    BooleanOption
-)
+from hatsploit.lib.ui.option import BooleanOption
 from hatsploit.lib.complex import (
     PayloadOption,
-    EncoderOption,
     DropperOption
 )
 
 from hatsploit.lib.ui.sessions import Sessions
-
 from hatsploit.lib.pseudo import Pseudo
 
 from hatsploit.lib.core.session import Session
@@ -57,13 +51,51 @@ from hatsploit.lib.core.payload import Payload
 from hatsploit.lib.core.module import Module
 
 from hatsploit.lib.core.handler.send import Send
-from hatsploit.lib.core.handler.misc import HatSploitSession
 
-from hatsploit.lib.core.payload.const import (
-    REVERSE_TCP,
-    BIND_TCP,
-    ONE_SIDE
-)
+from hatsploit.lib.complex import EncoderOption
+
+
+class PayloadHandler(BaseMixin):
+    """ Main class of hatsploit.lib.core.handler module.
+
+    This main class of hatsploit.lib.core.handler module is intended
+    for providing handler wrapper for payload.
+    """
+
+    def __init__(self, info: dict = {}) -> None:
+        """ Initialize handler mixin.
+
+        :param dict info: mixin info
+        :return None: None
+        """
+
+        super().__init__(info)
+
+        self.type = None
+        self.encoder = EncoderOption(
+            'ENCODER',
+            None,
+            "Encoder to use.",
+            False
+        )
+
+    def handle_implant(self, client: Any) -> Session:
+        """ Handle final stage of payload (implant).
+
+        :param Any client: client (normally socket.socket)
+        :return Session: session
+        """
+
+        return
+
+    def handle_all(self, *args, **kwargs) -> Tuple[Any, list]:
+        """ Handle payload.
+
+        :return Tuple[Any, list]: client and address
+        (index 0 - host, index 1 - port)
+        """
+
+        return None, ()
 
 
 class Handler(BaseMixin, Sessions):
@@ -97,44 +129,6 @@ class Handler(BaseMixin, Sessions):
             object=Module,
             advanced=True
         )
-        self.encoder = EncoderOption(
-            'ENCODER',
-            None,
-            "Encoder to use.",
-            False,
-            object=Payload
-        )
-
-        self.lhost = IPv4Option(
-            'LHOST',
-            TCPTools.get_local_host(),
-            "Local host.",
-            True,
-            object=Module
-        )
-        self.lport = PortOption(
-            'LPORT',
-            8888,
-            "Local port.",
-            True,
-            object=Module
-        )
-
-        self.rhost = IPv4Option(
-            'RHOST',
-            TCPTools.get_local_host(),
-            "Remote host.",
-            True,
-            object=Payload
-        )
-        self.rport = PortOption(
-            'RPORT',
-            8888,
-            "Remote port.",
-            True,
-            object=Payload
-        )
-
         self.dropper = DropperOption(
             'HANDLER::DROPPER',
             'auto',
@@ -214,37 +208,30 @@ class Handler(BaseMixin, Sessions):
             result = Send().drop_payload(
                 payload=payload,
                 dropper=self.dropper,
-                host=self.lhost.value,
-                port=self.lport.value,
                 **kwargs
             )
 
         else:
             result = Send().inline_payload(
                 payload=payload,
-                host=self.lhost.value,
-                port=self.lport.value,
                 **kwargs
             )
 
         if not result:
             raise RuntimeWarning("Payload sent, but no session was opened.")
 
-        client, host = result
+        session, address = result
+        print(session, address)
 
-        if client:
-            session = payload.info.get('Session', HatSploitSession)
-            session = session()
-            session.open(client)
-
+        if session:
             self.open_session(
                 session=session,
                 on_session=on_session,
                 info={
                     'Platform': payload.info['Platform'],
                     'Arch': payload.info['Arch'],
-                    'Host': host,
-                    'Port': self.lport.value
+                    'Host': address[0],
+                    'Port': address[1]
                 }
             )
 
@@ -257,25 +244,19 @@ class Handler(BaseMixin, Sessions):
         :return None: None
         """
 
-        client, host = Send().handle_session(
-            host=self.lhost.value,
-            port=self.lport.value,
+        session, address = Send().handle_session(
             payload=self.payload,
             *args, **kwargs
         )
 
-        if client:
-            session = self.payload.info.get('Session', HatSploitSession)
-            session = session()
-            session.open(client)
-
+        if session:
             self.open_session(
                 session=session,
                 on_session=on_session,
                 info={
                     'Platform': self.payload.info['Platform'],
                     'Arch': self.payload.info['Arch'],
-                    'Host': host,
-                    'Port': self.lport.value
+                    'Host': address[0],
+                    'Port': address[1]
                 }
             )

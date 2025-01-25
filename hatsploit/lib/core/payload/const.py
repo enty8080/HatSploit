@@ -22,9 +22,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-REVERSE_TCP = "reverse_tcp"
-BIND_TCP = "bind_tcp"
-ONE_SIDE = "one_side"
-
-PHASE = "stage"
+STAGER = "stager"
 SINGLE = "single"

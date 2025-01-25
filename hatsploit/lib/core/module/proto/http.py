@@ -23,7 +23,6 @@ SOFTWARE.
 """
 
 from hatsploit.lib.base import BaseMixin
-from hatsploit.lib.handle import Handle
 
 from pex.proto.http import HTTPClient, HTTPListener
 
@@ -76,8 +75,32 @@ class HTTP(BaseMixin):
         :return None: None
         """
 
-        Handle().listen_server(
-            local_host=self.host.value,
-            local_port=self.port.value,
+        limit = kwargs.get('limit', None)
+        job = kwargs.get('job', None)
+
+        def shutdown_submethod(server):
+            self.print_process(f"Terminating HTTP server on port {str(self.port.value)}...")
+
+            try:
+                server.stop()
+            except RuntimeError:
+                return
+
+        server = HTTPListener(
+            host=self.host.value,
+            port=self.port.value,
             *args, **kwargs
         )
+
+        if job:
+            job.set_exit(target=shutdown_submethod, args=(server,))
+
+        self.print_process(f"Starting HTTP server on port {str(self.port.value)}...")
+        server.listen()
+
+        if limit:
+            for _ in range(limit):
+                server.accept()
+        else:
+            while True:
+                server.accept()

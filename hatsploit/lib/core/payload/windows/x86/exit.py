@@ -88,7 +88,7 @@ class Exit(object):
         elif type == 'sleep':
             block += dedent(f"""\
                 mov  ebx, {self.text.block_api_hash('kernel32.dll', 'Sleep')}
-                push 300000
+                push 0x000493E0
                 push ebx
                 call ebp
                 jmp  exit

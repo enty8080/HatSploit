@@ -108,7 +108,7 @@ class Blocks(object):
             add r8, rdx
             mov cx, [r8+0x2*rcx]
             mov r8d, dword ptr [rax+0x1c]
-            add r8, rax
+            add r8, rdx
             mov eax, dword ptr [r8+0x4*rcx]
             add rax, rdx
 

@@ -145,8 +145,7 @@ class Check(Badges, Config):
                         'Authors',
                         'Description',
                         'Arch',
-                        'Platform',
-                        'Type',
+                        'Platform'
                     ]
 
                     assert all(key in payload_object.info for key in keys)

@@ -6,7 +6,7 @@ Current source: https://github.com/EntySec/HatSploit
 from hatsploit.lib.core.payload.basic import *
 
 
-class HatSploitPayload(Payload, Handler):
+class HatSploitPayload(Payload, ReverseTCPHandler):
     def __init__(self):
         super().__init__({
             'Name': "AppleScript Reverse TCP",
@@ -17,7 +17,6 @@ class HatSploitPayload(Payload, Handler):
             'Description': "AppleScript reverse TCP payload.",
             'Arch': ARCH_APPLESCRIPT,
             'Platform': OS_MACOS,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

@@ -7,7 +7,7 @@ from hatsploit.lib.core.payload.basic import *
 from hatsploit.lib.core.payload.linux import Linux
 
 
-class HatSploitPayload(Payload, Handler, Linux):
+class HatSploitPayload(Payload, ReverseTCPHandler, Linux):
     def __init__(self):
         super().__init__({
             'Name': "Linux armle Shell Reverse TCP",
@@ -21,7 +21,6 @@ class HatSploitPayload(Payload, Handler, Linux):
             """,
             'Arch': ARCH_ARMLE,
             'Platform': OS_LINUX,
-            'Type': REVERSE_TCP,
         })
 
         self.shell = Option('SHELL', '/bin/sh', "Executable path.", True,

@@ -7,7 +7,7 @@ from hatsploit.lib.core.payload.basic import *
 from hatsploit.lib.core.payload.windows import X86ReverseTCP
 
 
-class HatSploitPayload(Payload, Handler, X86ReverseTCP):
+class HatSploitPayload(Payload, ReverseTCPHandler, X86ReverseTCP):
     def __init__(self):
         super().__init__({
             'Name': "Windows x86 Reverse TCP",
@@ -21,7 +21,6 @@ class HatSploitPayload(Payload, Handler, X86ReverseTCP):
             """,
             'Arch': ARCH_X86,
             'Platform': OS_WINDOWS,
-            'Type': REVERSE_TCP,
         })
 
     def run(self):

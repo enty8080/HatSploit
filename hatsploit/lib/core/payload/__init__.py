@@ -55,11 +55,12 @@ class Payload(BaseMixin, Options):
             'Platform': None,
             'Staged': False,
             'Stage': '',
-            'Type': None,
             'Conversion': {
             },
         }
         details.update(info)
+
+        self.type = None
 
         super().__init__(details)
 
